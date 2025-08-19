@@ -36,12 +36,17 @@ export async function generateObjectWithRetry<T>({
         abortSignal,
       });
 
-      // Validate that we actually got a result
+      // Validate that we actually got a result with valid structure
       if (!result.object) {
         throw new Error('No object generated from AI model');
       }
 
-      return result;
+      // Additional validation: ensure the object has expected properties
+      if (typeof result.object === 'object' && result.object !== null) {
+        return result;
+      } else {
+        throw new Error('Generated object is not valid');
+      }
     } catch (error) {
       lastError = error as Error;
 
@@ -77,7 +82,7 @@ export async function generateObjectWithRetry<T>({
 }
 
 /**
- * Creates a fallback response based on the schema structure
+ * Creates a fallback response based on the schema structure and context
  */
 function createFallbackResponse<T>(schema: z.ZodSchema<T>): T | null {
   try {
@@ -88,9 +93,38 @@ function createFallbackResponse<T>(schema: z.ZodSchema<T>): T | null {
 
       for (const [key, fieldSchema] of Object.entries(shape)) {
         if (fieldSchema instanceof z.ZodArray) {
-          fallback[key] = [];
+          // Provide contextual defaults for arrays
+          if (key === 'questions') {
+            fallback[key] = [
+              'Pouvez-vous fournir plus de détails sur votre recherche ?',
+            ];
+          } else if (key === 'queries') {
+            fallback[key] = [
+              {
+                query: 'recherche générale',
+                researchGoal: 'Explorer le sujet',
+              },
+            ];
+          } else if (key === 'learnings') {
+            fallback[key] = [
+              "Aucun enseignement disponible en raison d'une erreur du modèle AI",
+            ];
+          } else if (key === 'followUpQuestions') {
+            fallback[key] = ['Recherche plus approfondie nécessaire'];
+          } else {
+            fallback[key] = [];
+          }
         } else if (fieldSchema instanceof z.ZodString) {
-          fallback[key] = '';
+          // Provide contextual defaults for strings
+          if (key === 'reportMarkdown') {
+            fallback[key] =
+              '# Rapport de recherche\n\nUne erreur est survenue lors de la génération du rapport avec le modèle AI. Veuillez réessayer.';
+          } else if (key === 'exactAnswer') {
+            fallback[key] =
+              'Une erreur est survenue lors de la génération de la réponse avec le modèle AI. Veuillez réessayer.';
+          } else {
+            fallback[key] = '';
+          }
         } else if (fieldSchema instanceof z.ZodNumber) {
           fallback[key] = 0;
         } else if (fieldSchema instanceof z.ZodBoolean) {

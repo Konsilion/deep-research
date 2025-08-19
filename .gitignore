@@ -20,6 +20,10 @@ node_modules
 # Testing
 coverage
 
+# Test files (temporary)
+**/test-*.ts
+src/test-*.ts
+
 # Turbo
 .turbo
 
