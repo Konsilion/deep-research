@@ -1,0 +1,44 @@
+**Rapport final sur Nicolas Brémond à Grenoble**
+
+## Sources
+
+- https://blue-community.net/2025/04/09/france-guardians-of-the-river-isere/
+- https://fr.wikipedia.org/wiki/Armorial_des_comtes_s%C3%A9nateurs_de_l%27Empire
+- https://scholar.lib.vt.edu/InterNews/LeMonde/issues/1997/lm970621.pdf
+- https://www.eui.eu/Documents/ServicesAdmin/CommunicationsService/CorporatePublications/EUIPublications/EUIReview/ERAutumn99.pdf
+- https://www.europarl.europa.eu/enlargement/members/pdf/vol2upd1.pdf
+- https://shs.cairn.info/revue-actuel-marx-2010-1-page-100?lang=fr
+- https://ec.europa.eu/governance/whats_new/europe2004_en.pdf
+- https://scholar.lib.vt.edu/InterNews/LeMonde/issues/1997/lm970730.pdf
+- https://www.assemblee-nationale.fr/14/cri/2014-2015/20150193.asp
+- https://www.senat.fr/cra/s20120717/s20120717_mono.html
+- https://ieeexplore.ieee.org/author/37086527169
+- https://www.researchgate.net/institution/Universite_Grenoble_Alpes/members/22
+- https://www.irphe.fr/~fragmix/
+- https://www.lcmd.espci.fr/page_publi.php
+- https://inc.cnrs.fr/sites/institut_inc/files/news/2021-01/INC_Actualites_2020_lv.pdf
+- https://cdn.ymaws.com/members.eps.org/resource/group/d90159d2-5b72-438e-8d5f-d93aa0a54985/conferences/cmd25-jmc14_condensed_matter_in_paris/programme_booklet_cmd-25.pdf
+- https://theses.hal.science/tel-02128333v1/file/Gruget-2018-These.pdf
+- https://www.science.gov/topicpages/f/faisceaux+radioactifs+recherche
+- https://theses.hal.science/tel-00980281v1/file/ZANELLA_Alain.pdf
+- https://www.supagro.fr/theses/extranet/19-0035_Bichot.pdf
+- https://darse.fr/v2/wp-content/uploads/2022/12/Biologie_et_medicine_en_France_et_en_Rus-1.pdf
+- https://mylearningworx.com/
+- https://library.oapen.org/bitstream/handle/20.500.12657/37729/9782800416373.pdf?sequence=1&isAllowed=y
+- https://parlement-isere.org/
+- https://journals.openedition.org/rsr/3350
+- https://hal.science/hal-00283569/document
+- https://www.erudit.org/fr/revues/philoso/2007-v34-n2-philoso1721/016999ar.pdf
+- https://shs.cairn.info/revue-de-metaphysique-et-de-morale-2021-4-page-567?lang=fr
+- https://www.middleeastmedievalists.com/wp-content/uploads/2021/01/UW-28.pdf
+- https://archive.org/download/etudesurlespecul00perd/etudesurlespecul00perd.pdf
+- https://archive.org/details/leslgendeshagio00delegoog
+- https://www.cnesco.fr/wp-content/uploads/2017/09/Contributions_Evaluation_et_democratie.pdf
+- https://liris.cnrs.fr/equipe/imagine
+- https://theses.hal.science/tel-04606612v1/file/91921_EUGENIE_2021_archivage.pdf
+- https://theses.hal.science/file/index/docid/48546/filename/tel-00010419.pdf
+- https://docs.python.org/fr/3.9/howto/logging-cookbook.html
+- https://franckh.developpez.com/tutoriels/posix/pthreads/
+- https://fr.wikipedia.org/wiki/Syst%C3%A8me_d%27exploitation_pour_capteur_en_r%C3%A9seau
+- https://www.researchgate.net/publication/228574027_Putting_IntelR_Threading_Building_Blocks_to_Work
+- https://docs.godotengine.org/fr/stable/classes/class_workerthreadpool.html
