@@ -1,9 +1,9 @@
 import FirecrawlApp, { SearchResponse } from '@mendable/firecrawl-js';
-import { generateObject } from 'ai';
 import { compact } from 'lodash-es';
 import pLimit from 'p-limit';
 import { z } from 'zod';
 
+import { generateObjectWithRetry } from './ai/generate-with-retry';
 import { getModel, trimPrompt } from './ai/providers';
 import { systemPrompt } from './prompt';
 
@@ -50,7 +50,7 @@ async function generateSerpQueries({
   numQueries?: number;
   learnings?: string[];
 }) {
-  const res = await generateObject({
+  const res = await generateObjectWithRetry({
     model: getModel(),
     system: systemPrompt(),
     prompt: `À partir de la requête utilisateur suivante, générez une liste de requêtes SERP pour explorer le sujet. Retournez un maximum de ${numQueries} requêtes uniques et spécifiques : <prompt>${query}</prompt>\n\n${
@@ -98,7 +98,7 @@ async function processSerpResult({
   );
   log(`Exécution de ${query}, trouvé ${contents.length} contenus`);
 
-  const res = await generateObject({
+  const res = await generateObjectWithRetry({
     model: getModel(),
     abortSignal: AbortSignal.timeout(60_000),
     system: systemPrompt(),
@@ -143,7 +143,7 @@ export async function writeFinalReport({
     .map(learning => `<learning>\n${learning}\n</learning>`)
     .join('\n');
 
-  const res = await generateObject({
+  const res = await generateObjectWithRetry({
     model: getModel(),
     system: systemPrompt(),
     prompt: trimPrompt(
@@ -174,7 +174,7 @@ export async function writeFinalAnswer({
     .map(learning => `<learning>\n${learning}\n</learning>`)
     .join('\n');
 
-  const res = await generateObject({
+  const res = await generateObjectWithRetry({
     model: getModel(),
     system: systemPrompt(),
     prompt: trimPrompt(
