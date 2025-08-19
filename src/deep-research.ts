@@ -64,14 +64,30 @@ async function generateSerpQueries({
     }`,
     schema: z.object({
       queries: z
-        .array(
-          z.object({
-            query: z.string().describe('Requête SERP'),
-            researchGoal: z
-              .string()
-              .describe('Objectif de recherche pour cette requête'),
-          }),
-        )
+        .union([
+          // Format attendu: array d'objets avec query et researchGoal
+          z.array(
+            z.object({
+              query: z.string().describe('Requête SERP'),
+              researchGoal: z
+                .string()
+                .describe('Objectif de recherche pour cette requête'),
+            }),
+          ),
+          // Format alternatif: array de strings (pour compatibilité avec différents modèles)
+          z.array(z.string()),
+        ])
+        .transform((queries) => {
+          // Si c'est déjà un array d'objets, le retourner tel quel
+          if (queries.length > 0 && typeof queries[0] === 'object' && 'query' in queries[0]) {
+            return queries as Array<{ query: string; researchGoal: string }>;
+          }
+          // Si c'est un array de strings, les transformer en objets
+          return (queries as string[]).map((q) => ({
+            query: q,
+            researchGoal: `Recherche d'informations pour: ${q}`,
+          }));
+        })
         .describe(`Liste de requêtes SERP, max de ${numQueries}`),
     }),
   });
