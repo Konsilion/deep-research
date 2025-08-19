@@ -1,34 +1,30 @@
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 
-import {
-  deepResearch,
-  writeFinalAnswer,
-  writeFinalReport,
-} from './deep-research';
+import { deepResearch, writeFinalAnswer, writeFinalReport } from './deep-research';
 
 const app = express();
 const port = process.env.PORT || 3051;
 
-// Middleware
+// Middleware - Configuration des middlewares
 app.use(cors());
 app.use(express.json());
 
-// Helper function for consistent logging
+// Fonction utilitaire pour des logs cohérents
 function log(...args: any[]) {
   console.log(...args);
 }
 
-// API endpoint to run research
+// Point d'entrée API pour exécuter une recherche
 app.post('/api/research', async (req: Request, res: Response) => {
   try {
     const { query, depth = 3, breadth = 3 } = req.body;
 
     if (!query) {
-      return res.status(400).json({ error: 'Query is required' });
+      return res.status(400).json({ error: 'La requête est obligatoire' });
     }
 
-    log('\nStarting research...\n');
+    log('\nDébut de la recherche...\n');
 
     const { learnings, visitedUrls } = await deepResearch({
       query,
@@ -36,9 +32,9 @@ app.post('/api/research', async (req: Request, res: Response) => {
       depth,
     });
 
-    log(`\n\nLearnings:\n\n${learnings.join('\n')}`);
+    log(`\n\nEnseignements :\n\n${learnings.join('\n')}`);
     log(
-      `\n\nVisited URLs (${visitedUrls.length}):\n\n${visitedUrls.join('\n')}`,
+      `\n\nURLs visitées (${visitedUrls.length}) :\n\n${visitedUrls.join('\n')}`,
     );
 
     const answer = await writeFinalAnswer({
@@ -46,7 +42,7 @@ app.post('/api/research', async (req: Request, res: Response) => {
       learnings,
     });
 
-    // Return the results
+    // Retourner les résultats
     return res.json({
       success: true,
       answer,
@@ -54,30 +50,30 @@ app.post('/api/research', async (req: Request, res: Response) => {
       visitedUrls,
     });
   } catch (error: unknown) {
-    console.error('Error in research API:', error);
+    console.error('Erreur dans l\'API de recherche :', error);
     return res.status(500).json({
-      error: 'An error occurred during research',
+      error: 'Une erreur est survenue lors de la recherche',
       message: error instanceof Error ? error.message : String(error),
     });
   }
 });
 
-// generate report API
+// Point d'entrée API pour générer un rapport
 app.post('/api/generate-report', async (req: Request, res: Response) => {
   try {
     const { query, depth = 3, breadth = 3 } = req.body;
     if (!query) {
-      return res.status(400).json({ error: 'Query is required' });
+      return res.status(400).json({ error: 'La requête est obligatoire' });
     }
-    log('\n Starting research...\n');
+    log('\nDébut de la recherche...\n');
     const { learnings, visitedUrls } = await deepResearch({
       query,
       breadth,
       depth,
     });
-    log(`\n\nLearnings:\n\n${learnings.join('\n')}`);
+    log(`\n\nEnseignements :\n\n${learnings.join('\n')}`);
     log(
-      `\n\nVisited URLs (${visitedUrls.length}):\n\n${visitedUrls.join('\n')}`,
+      `\n\nURLs visitées (${visitedUrls.length}) :\n\n${visitedUrls.join('\n')}`,
     );
     const report = await writeFinalReport({
       prompt: query,
@@ -87,17 +83,17 @@ app.post('/api/generate-report', async (req: Request, res: Response) => {
 
     return report;
   } catch (error: unknown) {
-    console.error('Error in generate report API:', error);
+    console.error("Erreur dans l'API de génération de rapport :", error);
     return res.status(500).json({
-      error: 'An error occurred during research',
+      error: 'Une erreur est survenue lors de la recherche',
       message: error instanceof Error ? error.message : String(error),
     });
   }
 });
 
-// Start the server
+// Démarrer le serveur
 app.listen(port, () => {
-  console.log(`Deep Research API running on port ${port}`);
+  console.log(`API de recherche approfondie en cours d'exécution sur le port ${port}`);
 });
 
 export default app;
