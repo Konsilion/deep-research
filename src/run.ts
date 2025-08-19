@@ -91,7 +91,9 @@ ${followUpQuestions.map((q: string, i: number) => `Q : ${q}\nR : ${answers[i]}`)
   });
 
   log(`\n\nRésultats :\n\n${learnings.join('\n')}`);
-  log(`\n\nURLs visitées (${visitedUrls.length}) :\n\n${visitedUrls.join('\n')}`);
+  log(
+    `\n\nURLs visitées (${visitedUrls.length}) :\n\n${visitedUrls.join('\n')}`,
+  );
   log('Rédaction du rapport final...');
 
   if (isReport) {
