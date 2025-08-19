@@ -1,7 +1,11 @@
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 
-import { deepResearch, writeFinalAnswer, writeFinalReport } from './deep-research';
+import {
+  deepResearch,
+  writeFinalAnswer,
+  writeFinalReport,
+} from './deep-research';
 
 const app = express();
 const port = process.env.PORT || 3051;
@@ -50,7 +54,7 @@ app.post('/api/research', async (req: Request, res: Response) => {
       visitedUrls,
     });
   } catch (error: unknown) {
-    console.error('Erreur dans l\'API de recherche :', error);
+    console.error("Erreur dans l'API de recherche :", error);
     return res.status(500).json({
       error: 'Une erreur est survenue lors de la recherche',
       message: error instanceof Error ? error.message : String(error),
@@ -93,7 +97,9 @@ app.post('/api/generate-report', async (req: Request, res: Response) => {
 
 // Démarrer le serveur
 app.listen(port, () => {
-  console.log(`API de recherche approfondie en cours d'exécution sur le port ${port}`);
+  console.log(
+    `API de recherche approfondie en cours d'exécution sur le port ${port}`,
+  );
 });
 
 export default app;
