@@ -175,6 +175,27 @@ OPENAI_ENDPOINT="custom_endpoint"
 CUSTOM_MODEL="custom_model"
 ```
 
+## Troubleshooting
+
+### NoObjectGeneratedError / JSON Parsing Errors
+
+If you encounter errors like:
+```
+NoObjectGeneratedError [AI_NoObjectGeneratedError]: No object generated: could not parse the response.
+```
+
+This typically happens when the AI model returns empty or malformed JSON responses. The application now includes automatic retry logic and fallback responses to handle these scenarios gracefully:
+
+- **Automatic Retries**: Failed requests are retried up to 3 times with exponential backoff
+- **Fallback Responses**: When all retries fail, meaningful fallback responses are provided
+- **Graceful Degradation**: The application continues to function with reduced capabilities rather than crashing
+
+If you continue to see these errors frequently, consider:
+1. Checking your API credentials and model configuration
+2. Switching to a different AI model or provider
+3. Reducing the concurrency limit to prevent API rate limiting
+4. Ensuring stable network connectivity to the AI service
+
 ## How It Works
 
 1. **Initial Setup**
