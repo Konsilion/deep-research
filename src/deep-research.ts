@@ -37,10 +37,12 @@ const firecrawl = new FirecrawlApp({
   apiUrl: process.env.FIRECRAWL_BASE_URL,
 });
 
-/**
- * Génère une liste de requêtes SERP (Search Engine Results Page) basées sur une requête utilisateur.
- * Appelé par `deepResearch` pour explorer les sous-thèmes d'une recherche.
- */
+
+
+
+
+
+
 async function generateSerpQueries({
   query,
   numQueries = 3,
@@ -78,10 +80,14 @@ async function generateSerpQueries({
   return res.object.queries.slice(0, numQueries);
 }
 
-/**
- * Traite les résultats SERP pour extraire des enseignements et des questions de suivi.
- * Appelé par `deepResearch` pour analyser le contenu des résultats.
- */
+
+
+
+
+
+
+
+
 async function processSerpResult({
   query,
   result,
@@ -93,20 +99,22 @@ async function processSerpResult({
   numLearnings?: number;
   numFollowUpQuestions?: number;
 }) {
-  const contents = compact(result.data.map(item => item.markdown)).map(
-    content => trimPrompt(content, 25_000),
+  // Limiter le nombre de contenus traités pour éviter les dépassements de contexte
+  const maxContentItems = 3; // Réduire de 5 à 3
+  const contents = compact(result.data.slice(0, maxContentItems).map(item => item.markdown)).map(
+    content => trimPrompt(content, 10_000), // Limiter chaque contenu à 10K tokens max
   );
   log(`Exécution de ${query}, trouvé ${contents.length} contenus`);
+
+  const prompt = `À partir des contenus suivants issus d'une recherche pour la requête <query>${query}</query>, extrayez une liste d'enseignements. Retournez un maximum de ${numLearnings} enseignements uniques et concis, aussi détaillés que possible :\n\n<contents>${contents
+    .map((content, i) => `<content ${i+1}>\n${content}\n</content ${i+1}>`)
+    .join('\n')}</contents>`;
 
   const res = await generateObject({
     model: getModel(),
     abortSignal: AbortSignal.timeout(60_000),
     system: systemPrompt(),
-    prompt: trimPrompt(
-      `À partir des contenus suivants issus d'une recherche pour la requête <query>${query}</query>, extrayez une liste d'enseignements. Retournez un maximum de ${numLearnings} enseignements uniques et concis, aussi détaillés que possible :\n\n<contents>${contents
-        .map(content => `<content>\n${content}\n</content>`)
-        .join('\n')}</contents>`,
-    ),
+    prompt: trimPrompt(prompt),
     schema: z.object({
       learnings: z
         .array(z.string())
@@ -122,6 +130,16 @@ async function processSerpResult({
 
   return res.object;
 }
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Génère un rapport final basé sur les enseignements et les URLs visitées.
