@@ -9,7 +9,7 @@ import {
 } from './deep-research';
 import { generateFeedback } from './feedback';
 
-// Helper function for consistent logging
+// Fonction utilitaire pour des journaux cohérents
 function log(...args: any[]) {
   console.log(...args);
 }
@@ -19,7 +19,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-// Helper function to get user input
+// Fonction utilitaire pour obtenir une entrée utilisateur
 function askQuestion(query: string): Promise<string> {
   return new Promise(resolve => {
     rl.question(query, answer => {
@@ -28,60 +28,61 @@ function askQuestion(query: string): Promise<string> {
   });
 }
 
-// run the agent
+// Exécuter l'agent
 async function run() {
-  console.log('Using model: ', getModel().modelId);
+  console.log('Modèle utilisé : ', getModel().modelId);
 
-  // Get initial query
-  const initialQuery = await askQuestion('What would you like to research? ');
+  // Obtenir la requête initiale
+  const initialQuery = await askQuestion('Que souhaitez-vous rechercher ? ');
 
-  // Get breath and depth parameters
+  // Obtenir les paramètres de largeur et de profondeur
   const breadth =
     parseInt(
       await askQuestion(
-        'Enter research breadth (recommended 2-10, default 4): ',
+        'Entrez la largeur de recherche (recommandé 2-10, par défaut 4) : ',
       ),
       10,
     ) || 4;
   const depth =
     parseInt(
-      await askQuestion('Enter research depth (recommended 1-5, default 2): '),
+      await askQuestion(
+        'Entrez la profondeur de recherche (recommandé 1-5, par défaut 2) : ',
+      ),
       10,
     ) || 2;
-  const isReport =
-    (await askQuestion(
-      'Do you want to generate a long report or a specific answer? (report/answer, default report): ',
-    )) !== 'answer';
+
+  // Toujours définir isReport sur true pour générer un rapport
+  const isReport = true;
 
   let combinedQuery = initialQuery;
   if (isReport) {
-    log(`Creating research plan...`);
+    log(`Création du plan de recherche...`);
 
-    // Generate follow-up questions
+    // Générer des questions de suivi
     const followUpQuestions = await generateFeedback({
       query: initialQuery,
     });
 
     log(
-      '\nTo better understand your research needs, please answer these follow-up questions:',
+      '\nPour mieux comprendre vos besoins de recherche, veuillez répondre à ces questions complémentaires :',
     );
 
-    // Collect answers to follow-up questions
+    // Collecter les réponses aux questions de suivi
     const answers: string[] = [];
     for (const question of followUpQuestions) {
-      const answer = await askQuestion(`\n${question}\nYour answer: `);
+      const answer = await askQuestion(`\n${question}\nVotre réponse : `);
       answers.push(answer);
     }
 
-    // Combine all information for deep research
+    // Combiner toutes les informations pour la recherche approfondie
     combinedQuery = `
-Initial Query: ${initialQuery}
-Follow-up Questions and Answers:
-${followUpQuestions.map((q: string, i: number) => `Q: ${q}\nA: ${answers[i]}`).join('\n')}
+Requête initiale : ${initialQuery}
+Questions complémentaires et réponses :
+${followUpQuestions.map((q: string, i: number) => `Q : ${q}\nR : ${answers[i]}`).join('\n')}
 `;
   }
 
-  log('\nStarting research...\n');
+  log('\nDémarrage de la recherche...\n');
 
   const { learnings, visitedUrls } = await deepResearch({
     query: combinedQuery,
@@ -89,9 +90,9 @@ ${followUpQuestions.map((q: string, i: number) => `Q: ${q}\nA: ${answers[i]}`).j
     depth,
   });
 
-  log(`\n\nLearnings:\n\n${learnings.join('\n')}`);
-  log(`\n\nVisited URLs (${visitedUrls.length}):\n\n${visitedUrls.join('\n')}`);
-  log('Writing final report...');
+  log(`\n\nRésultats :\n\n${learnings.join('\n')}`);
+  log(`\n\nURLs visitées (${visitedUrls.length}) :\n\n${visitedUrls.join('\n')}`);
+  log('Rédaction du rapport final...');
 
   if (isReport) {
     const report = await writeFinalReport({
@@ -100,18 +101,18 @@ ${followUpQuestions.map((q: string, i: number) => `Q: ${q}\nA: ${answers[i]}`).j
       visitedUrls,
     });
 
-    await fs.writeFile('report.md', report, 'utf-8');
-    console.log(`\n\nFinal Report:\n\n${report}`);
-    console.log('\nReport has been saved to report.md');
+    await fs.writeFile('rapport.md', report, 'utf-8');
+    console.log(`\n\nRapport Final :\n\n${report}`);
+    console.log('\nLe rapport a été sauvegardé dans rapport.md');
   } else {
     const answer = await writeFinalAnswer({
       prompt: combinedQuery,
       learnings,
     });
 
-    await fs.writeFile('answer.md', answer, 'utf-8');
-    console.log(`\n\nFinal Answer:\n\n${answer}`);
-    console.log('\nAnswer has been saved to answer.md');
+    await fs.writeFile('reponse.md', answer, 'utf-8');
+    console.log(`\n\nRéponse Finale :\n\n${answer}`);
+    console.log('\nLa réponse a été sauvegardée dans reponse.md');
   }
 
   rl.close();
