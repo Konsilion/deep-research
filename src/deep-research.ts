@@ -37,12 +37,6 @@ const firecrawl = new FirecrawlApp({
   apiUrl: process.env.FIRECRAWL_BASE_URL,
 });
 
-
-
-
-
-
-
 async function generateSerpQueries({
   query,
   numQueries = 3,
@@ -64,14 +58,34 @@ async function generateSerpQueries({
     }`,
     schema: z.object({
       queries: z
-        .array(
-          z.object({
-            query: z.string().describe('Requête SERP'),
-            researchGoal: z
-              .string()
-              .describe('Objectif de recherche pour cette requête'),
-          }),
-        )
+        .union([
+          // Format attendu: array d'objets avec query et researchGoal
+          z.array(
+            z.object({
+              query: z.string().describe('Requête SERP'),
+              researchGoal: z
+                .string()
+                .describe('Objectif de recherche pour cette requête'),
+            }),
+          ),
+          // Format alternatif: array de strings (pour compatibilité avec différents modèles)
+          z.array(z.string()),
+        ])
+        .transform(queries => {
+          // Si c'est déjà un array d'objets, le retourner tel quel
+          if (
+            queries.length > 0 &&
+            typeof queries[0] === 'object' &&
+            'query' in queries[0]
+          ) {
+            return queries as Array<{ query: string; researchGoal: string }>;
+          }
+          // Si c'est un array de strings, les transformer en objets
+          return (queries as string[]).map(q => ({
+            query: q,
+            researchGoal: `Recherche d'informations pour: ${q}`,
+          }));
+        })
         .describe(`Liste de requêtes SERP, max de ${numQueries}`),
     }),
   });
@@ -79,14 +93,6 @@ async function generateSerpQueries({
 
   return res.object.queries.slice(0, numQueries);
 }
-
-
-
-
-
-
-
-
 
 async function processSerpResult({
   query,
@@ -101,13 +107,15 @@ async function processSerpResult({
 }) {
   // Limiter le nombre de contenus traités pour éviter les dépassements de contexte
   const maxContentItems = 3; // Réduire de 5 à 3
-  const contents = compact(result.data.slice(0, maxContentItems).map(item => item.markdown)).map(
+  const contents = compact(
+    result.data.slice(0, maxContentItems).map(item => item.markdown),
+  ).map(
     content => trimPrompt(content, 10_000), // Limiter chaque contenu à 10K tokens max
   );
   log(`Exécution de ${query}, trouvé ${contents.length} contenus`);
 
   const prompt = `À partir des contenus suivants issus d'une recherche pour la requête <query>${query}</query>, extrayez une liste d'enseignements. Retournez un maximum de ${numLearnings} enseignements uniques et concis, aussi détaillés que possible :\n\n<contents>${contents
-    .map((content, i) => `<content ${i+1}>\n${content}\n</content ${i+1}>`)
+    .map((content, i) => `<content ${i + 1}>\n${content}\n</content ${i + 1}>`)
     .join('\n')}</contents>`;
 
   const res = await generateObject({
@@ -126,20 +134,13 @@ async function processSerpResult({
         ),
     }),
   });
-  log(`Créé ${res.object.learnings.length} enseignements`, res.object.learnings);
+  log(
+    `Créé ${res.object.learnings.length} enseignements`,
+    res.object.learnings,
+  );
 
   return res.object;
 }
-
-
-
-
-
-
-
-
-
-
 
 /**
  * Génère un rapport final basé sur les enseignements et les URLs visitées.
@@ -165,9 +166,7 @@ export async function writeFinalReport({
       `À partir de la requête utilisateur suivante, rédigez un rapport final détaillé en utilisant les enseignements de la recherche :\n\n<prompt>${prompt}</prompt>\n\n<learnings>\n${learningsString}\n</learnings>`,
     ),
     schema: z.object({
-      reportMarkdown: z
-        .string()
-        .describe('Rapport final au format Markdown'),
+      reportMarkdown: z.string().describe('Rapport final au format Markdown'),
     }),
   });
 
@@ -198,9 +197,7 @@ export async function writeFinalAnswer({
       `À partir de la requête utilisateur suivante, rédigez une réponse concise en utilisant les enseignements :\n\n<prompt>${prompt}</prompt>\n\n<learnings>\n${learningsString}\n</learnings>`,
     ),
     schema: z.object({
-      exactAnswer: z
-        .string()
-        .describe('Réponse finale concise'),
+      exactAnswer: z.string().describe('Réponse finale concise'),
     }),
   });
 
