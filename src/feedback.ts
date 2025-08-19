@@ -14,12 +14,30 @@ export async function generateFeedback({
   const userFeedback = await generateObject({
     model: getModel(),
     system: systemPrompt(),
-    prompt: `Given the following query from the user, ask some follow up questions to clarify the research direction. Return a maximum of ${numQuestions} questions, but feel free to return less if the original query is clear: <query>${query}</query>`,
+    prompt: `À partir de la requête utilisateur suivante, posez des questions de suivi pour clarifier la direction de recherche. 
+
+CONTRAINTES IMPORTANTES :
+- Répondez TOUJOURS en français
+- Restez strictement dans le périmètre de la requête originale
+- Maintenez les entités clés (noms de personnes entre guillemets, lieux, etc.)
+- Évitez d'introduire des sujets non liés à la requête
+- Si une personne et un lieu sont mentionnés, gardez-les en contexte
+- Privilégiez la désambiguïsation pour les requêtes concernant des personnes
+
+PRIORITÉS POUR LA DÉSAMBIGUÏSATION :
+- Orthographe/aliases du nom de la personne
+- Précisions géographiques et temporelles
+- Domaine d'activité ou profession
+- Période ou époque concernée
+
+Retournez un maximum de ${numQuestions} questions, mais n'hésitez pas à en retourner moins si la requête originale est déjà claire.
+
+<query>${query}</query>`,
     schema: z.object({
       questions: z
         .array(z.string())
         .describe(
-          `Follow up questions to clarify the research direction, max of ${numQuestions}`,
+          `Questions de suivi pour clarifier la direction de recherche, maximum ${numQuestions}`,
         ),
     }),
   });
