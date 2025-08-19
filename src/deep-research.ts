@@ -118,7 +118,10 @@ async function processSerpResult({
         ),
     }),
   });
-  log(`Créé ${res.object.learnings.length} enseignements`, res.object.learnings);
+  log(
+    `Créé ${res.object.learnings.length} enseignements`,
+    res.object.learnings,
+  );
 
   return res.object;
 }
@@ -147,9 +150,7 @@ export async function writeFinalReport({
       `À partir de la requête utilisateur suivante, rédigez un rapport final détaillé en utilisant les enseignements de la recherche :\n\n<prompt>${prompt}</prompt>\n\n<learnings>\n${learningsString}\n</learnings>`,
     ),
     schema: z.object({
-      reportMarkdown: z
-        .string()
-        .describe('Rapport final au format Markdown'),
+      reportMarkdown: z.string().describe('Rapport final au format Markdown'),
     }),
   });
 
@@ -180,9 +181,7 @@ export async function writeFinalAnswer({
       `À partir de la requête utilisateur suivante, rédigez une réponse concise en utilisant les enseignements :\n\n<prompt>${prompt}</prompt>\n\n<learnings>\n${learningsString}\n</learnings>`,
     ),
     schema: z.object({
-      exactAnswer: z
-        .string()
-        .describe('Réponse finale concise'),
+      exactAnswer: z.string().describe('Réponse finale concise'),
     }),
   });
 

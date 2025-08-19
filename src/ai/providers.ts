@@ -9,11 +9,6 @@ import { getEncoding } from 'js-tiktoken';
 
 import { RecursiveCharacterTextSplitter } from './text-splitter';
 
-
-
-
-
-
 // Providers
 const openai = process.env.OPENAI_KEY
   ? createOpenAI({
@@ -39,16 +34,6 @@ const introductionModel = process.env.CUSTOM_MODEL_INTRO
       structuredOutputs: true,
     })
   : undefined;
-
-
-
-
-
-
-
-
-
-
 
 // Models
 const o3MiniModel = openai?.('o3-mini', {
@@ -78,7 +63,6 @@ export function getModel(): LanguageModelV1 {
   return model as LanguageModelV1;
 }
 
-
 export function getIntroductionModel(): LanguageModelV1 {
   if (introductionModel) {
     return introductionModel;
@@ -87,15 +71,8 @@ export function getIntroductionModel(): LanguageModelV1 {
   return getModel();
 }
 
-
-
-
-
 const MinChunkSize = 140;
 const encoder = getEncoding('o200k_base');
-
-
-
 
 // trim prompt to maximum context size
 export function trimPrompt(

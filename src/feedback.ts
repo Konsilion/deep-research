@@ -1,10 +1,7 @@
 import { generateObject } from 'ai';
 import { z } from 'zod';
 
-import { getModel } from './ai/providers';
-import { getIntroductionModel } from './ai/providers';
-
-
+import { getIntroductionModel, getModel } from './ai/providers';
 import { systemPrompt } from './prompt';
 
 export async function generateFeedback({
@@ -18,6 +15,7 @@ export async function generateFeedback({
 }) {
   const model = introduction ? getIntroductionModel() : getModel();
   const userFeedback = await generateObject({
+    model: model,
     system: systemPrompt(),
     prompt: `
 À partir de la requête suivante, pose DES QUESTIONS DE SUIVI EN FRANÇAIS pour clarifier la direction de la recherche.
