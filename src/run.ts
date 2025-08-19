@@ -61,6 +61,7 @@ async function run() {
     // Générer des questions de suivi
     const followUpQuestions = await generateFeedback({
       query: initialQuery,
+      introduction: true,
     });
 
     log(

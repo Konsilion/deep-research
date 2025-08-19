@@ -11,6 +11,7 @@ services:
     stdin_open: true
     networks:
       - ksln-ntw
+    restart: unless-stopped
 
 networks:
   ksln-ntw:
